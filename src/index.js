@@ -17,19 +17,24 @@ const inputSearch = e => {
     refs.list.innerHTML = '';
     return;
   }
-  fetchCountries(value).then(countries => {
-    console.log(countries);
-    if (countries.length > 10) {
-      Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
-      return;
-    }
-    if (countries.length >= 2 && countries.length <= 10) {
-      renderCountries(countries);
-    }
-    if (countries.length === 1) {
-      renderCountrie(countries);
-    }
-  });
+  fetchCountries(value)
+    .then(countries => {
+      console.log(countries);
+      if (countries.length > 10) {
+        Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
+        return;
+      }
+      if (countries.length >= 2 && countries.length <= 10) {
+        renderCountries(countries);
+      }
+      if (countries.length === 1) {
+        renderCountry(countries);
+      }
+    })
+    .catch(() => {
+      Notiflix.Notify.failure("Oops, there is no country with that name");
+      refs.list.innerHTML = '';
+    });
 };
 
 function createCountriesList(country) {
@@ -42,24 +47,28 @@ function createCountriesList(country) {
 }
 
 function createCountry(country) {
-  return country.map(({ name, capital, flags, languages, population }) => {
-    return ` <img class="country-img-item" width="30" height="20" src="${flags.svg}" alt="${name.official}">
+  return country
+    .map(({ name, capital, flags, languages, population }) => {
+      return ` <img class="country-img-item" width="30" height="20" src="${flags.svg}" alt="${
+        name.official
+      }">
 <p>${name.official}</p></div>
 <ul class="list">
   <li class="list-item">Capital: ${capital}</li>
   <li class="list-item">Language: ${Object.values(languages).join(', ')}</li>
   <li class="list-item">Population: ${population}</li>
 </ul>`;
-  }).join(' ');
+    })
+    .join(' ');
 }
 function renderCountries(countries) {
   refs.list.innerHTML = createCountriesList(countries);
 }
-function renderCountrie(countries){
-  refs.list.innerHTML = createCountry(countries)
+function renderCountry(countries) {
+  refs.list.innerHTML = createCountry(countries);
 }
 
 refs.input.addEventListener('input', debounce(inputSearch, DEBOUNCE_DELAY));
 // const allLanguages = Object.values(languages);
 
-export {refs}
+export { refs };
